@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7-р анги: Математик & Физикийн Даалгаврын Систем</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX CSS & JS for Math & Physics Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .level-badge-23 { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .level-badge-45 { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+        .level-badge-67 { background-color: #ffedd5; color: #c2410c; border: 1px solid #fdba74; }
+        .level-badge-8  { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen relative">
+
+    <!-- Navigation Header -->
+    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-indigo-700/80 rounded-xl border border-indigo-500/30">
+                        <i class="fa-solid fa-graduation-cap text-2xl text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">7-р Анги: Сургалтын Даалгаврын Систем</h1>
+                        <p class="text-indigo-200 text-xs font-medium">Математик ("Энгийн бутархай") & Физик ("Биеийн ерөнхий шинж чанар")</p>
+                    </div>
+                </div>
+
+                <!-- Mode Switcher & Student Profile Info -->
+                <div class="flex flex-wrap items-center gap-3 justify-between md:justify-end">
+                    <!-- Student Identity Pill -->
+                    <div id="student-info-pill" class="hidden items-center gap-2 bg-indigo-800/90 border border-indigo-700 px-3 py-1.5 rounded-xl text-xs">
+                        <i class="fa-solid fa-user-graduate text-amber-400"></i>
+                        <div>
+                            <span id="student-display-name" class="font-bold text-white">Сурагч</span>
+                            <span id="student-display-class" class="text-indigo-300 text-[11px] ml-1">(7A)</span>
+                        </div>
+                        <button onclick="openStudentLoginModal()" class="ml-1 text-indigo-300 hover:text-white" title="Нэр өөрчлөх">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+
+                    <!-- Role Toggle Controls -->
+                    <div class="bg-indigo-950/70 p-1 rounded-xl flex items-center border border-indigo-800">
+                        <button id="btn-mode-student" onclick="switchRole('student')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow">
+                            <i class="fa-solid fa-user-graduate"></i>
+                            <span>Сурагчийн горим</span>
+                        </button>
+                        <button id="btn-mode-teacher" onclick="switchRole('teacher')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-indigo-300 hover:text-white">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            <span>Багшийн горим</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- ================= STUDENT VIEW ================= -->
+        <section id="view-student" class="space-y-6">
+            
+            <!-- Student Stats Summary & Scoreboard -->
+            <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+                        <i class="fa-solid fa-trophy text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 font-medium">Нийт цуглуулсан оноо</div>
+                        <div class="text-2xl font-black text-slate-800"><span id="user-score">0</span> <span class="text-xs font-normal text-slate-500">оноо</span></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 border-l border-slate-200 pl-4 sm:pl-6">
+                    <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl">
+                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 font-medium">Бодсон даалгавар</div>
+                        <div id="solved-count" class="text-2xl font-black text-slate-800">0 / 0</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full lg:w-72 space-y-1.5">
+                    <div class="flex justify-between text-xs font-semibold text-slate-600">
+                        <span>Сонгосон хичээлийн ахиц</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200">
+                        <div id="progress-bar-fill" class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Selection Navigation Tabs -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="switchSubject('math')" id="tab-math" class="flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base border shadow-sm">
+                    <i class="fa-solid fa-calculator text-xl"></i>
+                    <div class="text-left">
+                        <div class="text-[11px] font-normal opacity-80 uppercase tracking-wider">7-р анги Математик</div>
+                        <div>Энгийн бутархай</div>
+                    </div>
+                </button>
+                <button onclick="switchSubject('physics')" id="tab-physics" class="flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base border shadow-sm">
+                    <i class="fa-solid fa-atom text-xl"></i>
+                    <div class="text-left">
+                        <div class="text-[11px] font-normal opacity-80 uppercase tracking-wider">7-р анги Физик</div>
+                        <div>Биеийн ерөнхий шинж чанар</div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Level Filter Buttons -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1 hidden lg:inline">Түвшин:</span>
+                    <button onclick="filterLevel('all')" id="lvl-all" class="level-btn px-3 py-1.5 text-xs rounded-xl font-semibold transition-all">Бүх түвшин</button>
+                    <button onclick="filterLevel('2-3 түвшин')" id="lvl-23" class="level-btn px-3 py-1.5 text-xs rounded-xl font-semibold transition-all">2-3 түвшин (Хялбар)</button>
+                    <button onclick="filterLevel('4-5 түвшин')" id="lvl-45" class="level-btn px-3 py-1.5 text-xs rounded-xl font-semibold transition-all">4-5 түвшин (Дунд)</button>
+                    <button onclick="filterLevel('6-7 түвшин')" id="lvl-67" class="level-btn px-3 py-1.5 text-xs rounded-xl font-semibold transition-all">6-7 түвшин (Ахисан)</button>
+                    <button onclick="filterLevel('8 түвшин')" id="lvl-8" class="level-btn px-3 py-1.5 text-xs rounded-xl font-semibold transition-all">8 түвшин (Гүнзгий)</button>
+                </div>
+
+                <!-- Search Input & Reset Button -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <div class="relative w-full sm:w-60">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="search-input" oninput="renderTasks()" placeholder="Даалгавар хайх..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="confirmResetProgress()" class="text-xs text-rose-600 hover:text-rose-700 font-semibold px-3 py-2 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all border border-rose-200 flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Ахиц арилгах</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task Cards Grid Container -->
+            <div id="tasks-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Dynamic Task Cards will be inserted here -->
+            </div>
+
+            <!-- Empty state message -->
+            <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-700">Даалгавар олдсонгүй</h3>
+                <p class="text-slate-500 text-xs mt-1">Сонгосон түвшин эсвэл хайлтад тохирох бодлого одоогоор алга байна.</p>
+            </div>
+        </section>
+
+        <!-- ================= TEACHER VIEW ================= -->
+        <section id="view-teacher" class="space-y-6 hidden">
+            
+            <!-- Teacher Header Banner -->
+            <div class="bg-gradient-to-r from-indigo-800 to-slate-900 text-white p-6 rounded-3xl shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="bg-indigo-700/80 text-indigo-200 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Багшийн Удирдлагын Хэсэг</span>
+                    <h2 class="text-xl sm:text-2xl font-black mt-2">Даалгавар Бэлтгэх & Сурагчдын Хяналт</h2>
+                    <p class="text-indigo-200 text-xs mt-1">Шинэ бодлого нэмж оруулах, сурагчдын бодолтын үр дүн, гүйцэтгэлийг шалгах боломжтой.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleAddTaskModal(true)" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-base"></i>
+                        <span>Шинэ даалгавар нэмэх</span>
+                    </button>
+                    <button onclick="confirmResetAllTasks()" class="bg-rose-600/80 hover:bg-rose-600 text-white px-3.5 py-2.5 rounded-xl font-semibold text-xs border border-rose-500 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Анхны даалгаварт шилжүүлэх</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Teacher Tabs (Task Bank vs Student Logs) -->
+            <div class="flex border-b border-slate-200 gap-4">
+                <button id="teacher-tab-logs" onclick="switchTeacherTab('logs')" class="py-3 px-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-chart-user"></i>
+                    <span>Сурагчдын бодолтын хяналт</span>
+                </button>
+                <button id="teacher-tab-bank" onclick="switchTeacherTab('bank')" class="py-3 px-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Даалгаврын сан (<span id="teacher-task-count">0</span>)</span>
+                </button>
+            </div>
+
+            <!-- Teacher Tab Content 1: Student Logs & Results -->
+            <div id="teacher-content-logs" class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-4">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-indigo-600"></i>
+                        Сурагчдын Илгээсэн Бодолтын Түүх
+                    </h3>
+                    <button onclick="confirmClearLogs()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-3 py-1.5 bg-rose-50 rounded-lg transition-all border border-rose-200">
+                        <i class="fa-solid fa-trash text-xs mr-1"></i> Түүх цэвэрлэх
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5">Сурагчийн нэр</th>
+                                    <th class="p-3.5">Анги</th>
+                                    <th class="p-3.5">Хичээл</th>
+                                    <th class="p-3.5">Түвшин</th>
+                                    <th class="p-3.5">Бодлого / Асуулт</th>
+                                    <th class="p-3.5">Хариулт</th>
+                                    <th class="p-3.5">Үр дүн</th>
+                                    <th class="p-3.5">Огноо, цаг</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-logs-tbody" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Dynamic Student Logs Inserted Here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="logs-empty-state" class="text-center py-10 text-slate-400 text-xs hidden">
+                        Сурагчдын бодсон даалгаврын түүх хараахан бүртгэгдээгүй байна.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Tab Content 2: Task Bank Management -->
+            <div id="teacher-content-bank" class="space-y-4 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="teacher-tasks-list">
+                    <!-- Dynamic Task List for editing/deleting -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-5 mt-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+            <p class="font-medium text-slate-700">7-р анги: Математик ("Энгийн бутархай") & Физик ("Биеийн ерөнхий шинж чанар") Боловсролын Интерактив Систем</p>
+            <p class="text-[11px] text-slate-400">Сурагч өөрөө бодох ба Багш шинээр даалгавар нэмэх боломжтой интерактив сайт</p>
+        </div>
+    </footer>
+
+    <!-- Student Login / Name Modal -->
+    <div id="student-login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 relative">
+            <div class="text-center space-y-2 mb-6">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-xl font-bold">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Сурагчийн мэдээлэл оруулах</h3>
+                <p class="text-slate-500 text-xs">Та өөрийн нэр ба ангийг оруулснаар бодсон амжилт тань бүртгэгдэнэ.</p>
+            </div>
+
+            <form onsubmit="saveStudentInfo(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Овог Нэр</label>
+                    <input type="text" id="modal-student-name" required placeholder="Жишээ нь: Б. Болд" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Анги, бүлэг</label>
+                    <input type="text" id="modal-student-class" required placeholder="Жишээ нь: 7A" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-md transition-all">
+                    Системд нэвтрэх
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Task Modal (For Teachers) -->
+    <div id="add-task-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-100">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-indigo-600"></i>
+                    Шинэ даалгавар нэмэх
+                </h3>
+                <button onclick="toggleAddTaskModal(false)" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="add-task-form" onsubmit="handleAddTask(event)" class="space-y-4 mt-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Хичээл</label>
+                        <select id="modal-subject" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                            <option value="math">Математик (Энгийн бутархай)</option>
+                            <option value="physics">Физик (Биеийн ерөнхий шинж чанар)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Түвшин</label>
+                        <select id="modal-level" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                            <option value="2-3 түвшин">2-3 түвшин (Хялбар)</option>
+                            <option value="4-5 түвшин">4-5 түвшин (Дунд)</option>
+                            <option value="6-7 түвшин">6-7 түвшин (Ахисан)</option>
+                            <option value="8 түвшин">8 түвшин (Гүнзгий)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Даалгаврын агуулга / Бодлогын өгөгдөл</label>
+                    <textarea id="modal-question" required rows="3" placeholder="Бодлогын бичвэр... (Томьёог $\frac{a}{b}$ эсвэл $\rho = \frac{m}{V}$ гэж бичиж болно)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Сонголт A</label>
+                        <input type="text" id="modal-opt-a" required placeholder="Сонголт A" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Сонголт B</label>
+                        <input type="text" id="modal-opt-b" required placeholder="Сонголт B" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Сонголт C</label>
+                        <input type="text" id="modal-opt-c" required placeholder="Сонголт C" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Сонголт D</label>
+                        <input type="text" id="modal-opt-d" required placeholder="Сонголт D" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Зөв хариулт (Яг таарах утга)</label>
+                    <input type="text" id="modal-correct" required placeholder="Яг аль сонголттой адилхан утга байх" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Зөвлөмж / Бодолтын алхам</label>
+                    <textarea id="modal-solution" rows="2" placeholder="Даалгаврыг бодох тайлбар, зөвлөмж..." class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
+                    <button type="button" onclick="toggleAddTaskModal(false)" class="px-4 py-2 text-xs text-slate-600 hover:text-slate-800 font-bold">Цуцлах</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow transition-all">Хадгалах & Нийтлэх</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Dialog Modal (Replaces alert/confirm) -->
+    <div id="custom-dialog-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4 border border-slate-100">
+            <div id="dialog-icon" class="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <div>
+                <h4 id="dialog-title" class="text-base font-bold text-slate-800">Мэдэгдэл</h4>
+                <p id="dialog-message" class="text-xs text-slate-600 mt-1 leading-relaxed"></p>
+            </div>
+            <div id="dialog-actions" class="flex items-center justify-center gap-2 pt-2">
+                <!-- Action buttons inserted dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        
+        // Comprehensive Dataset Generation Functions for Math & Physics (20 problems per level x 4 levels x 2 subjects = 160 problems)
+        function generateMathTasks() {
+            const levels = [
+                { name: '2-3 түвшин', pts: 10, prefix: 'm23' },
+                { name: '4-5 түвшин', pts: 20, prefix: 'm45' },
+                { name: '6-7 түвшин', pts: 30, prefix: 'm67' },
+                { name: '8 түвшин',   pts: 40, prefix: 'm8'  }
+            ];
+
+            const taskList = [];
+
+            levels.forEach((lvl) => {
+                for (let i = 1; i <= 20; i++) {
+                    const id = `${lvl.prefix}-${i}`;
+                    let q = '', opts = [], corr = '', sol = '';
+
+                    if (lvl.name === '2-3 түвшин') {
+                        // Level 2-3: Basic fraction addition, subtraction, identification
+                        const denom = 3 + (i % 7);
+                        const a = 1 + (i % (denom - 1));
+                        const b = 1 + ((i * 2) % (denom - a));
+                        const sum = a + b;
+                        
+                        q = `Дараах ижил хуваарьтай бутархайнуудын нийлбэрийг олно уу: $$\\frac{${a}}{${denom}} + \\frac{${b}}{${denom}}$$`;
+                        corr = `\\frac{${sum}}{${denom}}`;
+                        opts = [
+                            `\\frac{${sum}}{${denom}}`,
+                            `\\frac{${sum}}{${denom * 2}}`,
+                            `\\frac{${Math.abs(a - b)}}{${denom}}`,
+                            `\\frac{${sum + 1}}{${denom}}`
+                        ];
+                        sol = `Ижил хуваарьтай бутархайг нэмэхдээ хуваарийг хэвээр үлдээж, хүртвэрүүдийг нэмнэ: \\frac{${a} + ${b}}{${denom}} = \\frac{${sum}}{${denom}}.`;
+                    } 
+                    else if (lvl.name === '4-5 түвшин') {
+                        // Level 4-5: Fraction reduction & common denominators
+                        const k = 2 + (i % 4);
+                        const num = 3 * i;
+                        const den = 4 * i;
+                        q = `$$\\frac{${num * k}}{${den * k}}$$ бутархайг хамгийн их ерөнхий хуваагчаар нь хурааж, анхны эгэл бутархайг олно уу.`;
+                        corr = `\\frac{3}{4}`;
+                        opts = [
+                            `\\frac{3}{4}`,
+                            `\\frac{2}{3}`,
+                            `\\frac{${num}}{${den + 1}}`,
+                            `\\frac{1}{2}`
+                        ];
+                        sol = `Хүртвэр ба хуваарийг тэдгээрийн ХИЕХ-д хувааж хураана: \\frac{${num * k} \\div ${k * i}}{${den * k} \\div ${k * i}} = \\frac{3}{4}.`;
+                    }
+                    else if (lvl.name === '6-7 түвшин') {
+                        // Level 6-7: Mixed fraction arithmetic
+                        const w1 = 1 + (i % 3);
+                        const w2 = 2 + (i % 2);
+                        q = `Холимог бутархайн нийлбэрийг бодно уу: $$${w1}\\frac{1}{3} + ${w2}\\frac{1}{2}$$`;
+                        const totalWhole = w1 + w2;
+                        corr = `${totalWhole}\\frac{5}{6}`;
+                        opts = [
+                            `${totalWhole}\\frac{5}{6}`,
+                            `${totalWhole}\\frac{2}{5}`,
+                            `${totalWhole + 1}\\frac{1}{6}`,
+                            `${totalWhole}\\frac{1}{6}`
+                        ];
+                        sol = `1) Бүхэл хэсгүүдийн нийлбэр: $${w1} + ${w2} = ${totalWhole}$\n2) Бутархай хэсгүүдийн нийлбэр (ерөнхий хуваарь 6): $\\frac{1}{3} + \\frac{1}{2} = \\frac{2 + 3}{6} = \\frac{5}{6}$\nХариу: $${totalWhole}\\frac{5}{6}$.`;
+                    }
+                    else {
+                        // Level 8: Compound expression with multiplication & division
+                        const a = 1 + (i % 4);
+                        q = `Дараах цогц илэрхийллийн утгыг олно уу: $$\\left(\\frac{${a}}{2} \\times \\frac{4}{${a + 1}}\\right) \\div \\frac{2}{${a + 1}}$$`;
+                        corr = `1`;
+                        opts = ['1', '\\frac{1}{2}', '\\frac{3}{4}', '2'];
+                        sol = `1) Хаалтан доторх үржүүлэх үйлдэл: $\\frac{${a}}{2} \\times \\frac{4}{${a + 1}} = \\frac{4${a}}{2(${a + 1})} = \\frac{2${a}}{${a + 1}}$\n2) Хуваах үйлдэл: $\\frac{2${a}}{${a + 1}} \\div \\frac{2}{${a + 1}} = 1$.`;
+                    }
+
+                    // Shuffle options
+                    opts = shuffleArray(opts);
+
+                    taskList.push({
+                        id,
+                        subject: 'math',
+                        level: lvl.name,
+                        question: q,
+                        options: opts,
+                        correct: corr,
+                        solution: sol,
+                        points: lvl.pts
+                    });
+                }
+            });
+
+            return taskList;
+        }
+
+        function generatePhysicsTasks() {
+            const levels = [
+                { name: '2-3 түвшин', pts: 10, prefix: 'p23' },
+                { name: '4-5 түвшин', pts: 20, prefix: 'p45' },
+                { name: '6-7 түвшин', pts: 30, prefix: 'p67' },
+                { name: '8 түвшин',   pts: 40, prefix: 'p8'  }
+            ];
+
+            const taskList = [];
+
+            levels.forEach((lvl) => {
+                for (let i = 1; i <= 20; i++) {
+                    const id = `${lvl.prefix}-${i}`;
+                    let q = '', opts = [], corr = '', sol = '';
+
+                    if (lvl.name === '2-3 түвшин') {
+                        // Level 2-3: Basic states of matter concepts
+                        if (i % 3 === 1) {
+                            q = `Бодисын хатуу төлөвт орших биеийн ${i}-р шинж чанарыг сонгоно уу.`;
+                            corr = 'Тодорхой хэлбэр ба эзлэхүүнийг хадгална';
+                            opts = [
+                                'Тодорхой хэлбэр ба эзлэхүүнийг хадгална',
+                                'Агуулж буй савны хэлбэрийг бүрэн дагана',
+                                'Эзлэхүүнгүй боловч хэлбэртэй байна',
+                                'Бүх орон зайг чөлөөтэй дүүргэнэ'
+                            ];
+                            sol = 'Хатуу биеийн жижиг хэсгүүд нь хоорондоо нягт байрладаг тул хэлбэр болон эзлэхүүнээ хадгалдаг.';
+                        } else if (i % 3 === 2) {
+                            q = `Шингэн төлөвт орших биеийн онцлог шинжийг заана уу.`;
+                            corr = 'Эзлэхүүнээ хадгална, харин хэлбэрээ хялбар өөрчилнө';
+                            opts = [
+                                'Эзлэхүүнээ хадгална, харин хэлбэрээ хялбар өөрчилнө',
+                                'Тодорхой хэлбэртэй байна',
+                                'Хүчээр шахахад эзлэхүүн нь хэд дахин багасна',
+                                'Хэлбэр ба эзлэхүүн хоёулаа тогтмол бус'
+                            ];
+                            sol = 'Шингэн бие нь агуулж буй савны хэлбэрийг дагадаг боловч эзлэхүүн нь хэвээр байна.';
+                        } else {
+                            q = `Хийн төлөвт орших бодисын жижиг хэсгүүдийн байрлалын онцлог юу вэ?`;
+                            corr = 'Жижиг хэсгүүдийн хоорондын зай маш их, харилцан үйлчлэл сул';
+                            opts = [
+                                'Жижиг хэсгүүдийн хоорондын зай маш их, харилцан үйлчлэл сул',
+                                'Жижиг хэсгүүд нь кристал тор үүсгэнэ',
+                                'Жижиг хэсгүүд бие биедээ наалдсан байна',
+                                'Хөдөлгөөн хийх боломжгүй бэхлэгдсэн'
+                            ];
+                            sol = 'Хийн жижиг хэсгүүд хоорондоо хол зайд орших ба бүх чиглэлд чөлөөтэй хөдөлдөг.';
+                        }
+                    } 
+                    else if (lvl.name === '4-5 түвшин') {
+                        // Level 4-5: SI Unit Conversion (kg to g, m3 to cm3)
+                        const val = (i * 0.5 + 1).toFixed(1);
+                        const gram = Math.round(val * 1000);
+                        q = `$${val} \\text{ кг}$ массыг грамм (г) нэгжид шилжүүлбэл хэд болох вэ?`;
+                        corr = `${gram} г`;
+                        opts = [
+                            `${gram} г`,
+                            `${Math.round(gram / 10)} г`,
+                            `${gram * 10} г`,
+                            `${val * 100} г`
+                        ];
+                        sol = `$1 \\text{ кг} = 1000 \\text{ г}$ тул $${val} \\times 1000 = ${gram} \\text{ г}$ болно.`;
+                    }
+                    else if (lvl.name === '6-7 түвшин') {
+                        // Level 6-7: Density calculation rho = m / V
+                        const V = 100 + i * 10;
+                        const density = (2 + (i % 5)).toFixed(1);
+                        const m = Math.round(density * V);
+                        q = `$V = ${V} \\text{ см}^3$ эзлэхүүнтэй, $m = ${m} \\text{ г}$ мастай биеийн нягтыг ($\\rho$) олно уу.`;
+                        corr = `${density} г/см³`;
+                        opts = [
+                            `${density} г/см³`,
+                            `${(density * 2).toFixed(1)} г/см³`,
+                            `${(density / 2).toFixed(1)} г/см³`,
+                            `${m + V} г/см³`
+                        ];
+                        sol = `Нягт олох томьёо: $\\rho = \\frac{m}{V}$\nӨгөгдлийг орлуулвал: $\\rho = \\frac{${m} \\text{ г}}{${V} \\text{ см}^3} = ${density} \\text{ г/см}^3$.`;
+                    }
+                    else {
+                        // Level 8: Mass or Volume finding from Density formula
+                        const V = 50 + i * 5;
+                        const rho = 7.8; // Steel density
+                        const m = Math.round(rho * V);
+                        q = `Бодисын нягт $\\rho = 7.8 \\text{ г/см}^3$ ба $V = ${V} \\text{ см}^3$ эзлэхүүнтэй ган биеийн массыг олно уу.`;
+                        corr = `${m} г`;
+                        opts = [
+                            `${m} г`,
+                            `${Math.round(m / 2)} г`,
+                            `${m + 100} г`,
+                            `${Math.round(m * 1.5)} г`
+                        ];
+                        sol = `Масс олох томьёо: $m = \\rho \\times V$\nӨгөгдлийг орлуулвал: $m = 7.8 \\text{ г/см}^3 \\times ${V} \\text{ см}^3 = ${m} \\text{ г}$.`;
+                    }
+
+                    opts = shuffleArray(opts);
+
+                    taskList.push({
+                        id,
+                        subject: 'physics',
+                        level: lvl.name,
+                        question: q,
+                        options: opts,
+                        correct: corr,
+                        solution: sol,
+                        points: lvl.pts
+                    });
+                }
+            });
+
+            return taskList;
+        }
+
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let currentRole = 'student';  // 'student' or 'teacher'
+        let currentSubject = 'math';  // 'math' or 'physics'
+        let currentLevel = 'all';     // 'all', '2-3 түвшин', '4-5 түвшин', '6-7 түвшин', '8 түвшин'
+        let activeTeacherTab = 'logs';// 'logs' or 'bank'
+
+        let tasks = [];
+        let userProgress = {};        // { taskId: { solved: true/false, userAns: '' } }
+        let studentProfile = { name: 'Сурагч', class: '7A' };
+        let studentLogs = [];         // Array of log entries for teacher analysis
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStorage();
+            renderSubjectTabs();
+            renderLevelButtons();
+            renderTasks();
+            updateStats();
+            updateTeacherView();
+
+            // Prompt student login if first time
+            if (!localStorage.getItem('edu_student_profile_7th')) {
+                openStudentLoginModal();
+            }
+        });
+
+        function loadStorage() {
+            // Load Tasks
+            const storedTasks = localStorage.getItem('edu_tasks_7th_v2');
+            if (storedTasks) {
+                try {
+                    tasks = JSON.parse(storedTasks);
+                } catch (e) {
+                    tasks = [...generateMathTasks(), ...generatePhysicsTasks()];
+                }
+            } else {
+                tasks = [...generateMathTasks(), ...generatePhysicsTasks()];
+                localStorage.setItem('edu_tasks_7th_v2', JSON.stringify(tasks));
+            }
+
+            // Load Progress
+            const storedProg = localStorage.getItem('edu_progress_7th_v2');
+            if (storedProg) {
+                try { userProgress = JSON.parse(storedProg); } catch (e) { userProgress = {}; }
+            }
+
+            // Load Student Profile
+            const storedProf = localStorage.getItem('edu_student_profile_7th');
+            if (storedProf) {
+                try {
+                    studentProfile = JSON.parse(storedProf);
+                    updateStudentInfoUI();
+                } catch(e) {}
+            }
+
+            // Load Student Activity Logs
+            const storedLogs = localStorage.getItem('edu_student_logs_7th');
+            if (storedLogs) {
+                try { studentLogs = JSON.parse(storedLogs); } catch(e) { studentLogs = []; }
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('edu_progress_7th_v2', JSON.stringify(userProgress));
+            updateStats();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('edu_tasks_7th_v2', JSON.stringify(tasks));
+            document.getElementById('teacher-task-count').innerText = tasks.length;
+        }
+
+        function saveStudentLogs() {
+            localStorage.setItem('edu_student_logs_7th', JSON.stringify(studentLogs));
+            updateTeacherLogsUI();
+        }
+
+        function switchRole(role) {
+            currentRole = role;
+            const btnStudent = document.getElementById('btn-mode-student');
+            const btnTeacher = document.getElementById('btn-mode-teacher');
+            const viewStudent = document.getElementById('view-student');
+            const viewTeacher = document.getElementById('view-teacher');
+
+            if (role === 'student') {
+                btnStudent.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow";
+                btnTeacher.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-indigo-300 hover:text-white";
+                viewStudent.classList.remove('hidden');
+                viewTeacher.classList.add('hidden');
+            } else {
+                btnTeacher.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow";
+                btnStudent.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-indigo-300 hover:text-white";
+                viewTeacher.classList.remove('hidden');
+                viewStudent.classList.add('hidden');
+                updateTeacherView();
+            }
+        }
+
+        function switchSubject(sub) {
+            currentSubject = sub;
+            renderSubjectTabs();
+            renderTasks();
+            updateStats();
+        }
+
+        function filterLevel(lvl) {
+            currentLevel = lvl;
+            renderLevelButtons();
+            renderTasks();
+        }
+
+        function renderSubjectTabs() {
+            const mathBtn = document.getElementById('tab-math');
+            const physBtn = document.getElementById('tab-physics');
+
+            if (currentSubject === 'math') {
+                mathBtn.className = "flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base shadow-md bg-indigo-600 text-white border-indigo-600";
+                physBtn.className = "flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base bg-white text-slate-600 hover:bg-slate-100 border-slate-200";
+            } else {
+                physBtn.className = "flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base shadow-md bg-indigo-600 text-white border-indigo-600";
+                mathBtn.className = "flex-1 sm:flex-none px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all text-sm sm:text-base bg-white text-slate-600 hover:bg-slate-100 border-slate-200";
+            }
+        }
+
+        function renderLevelButtons() {
+            const levels = ['all', '2-3 түвшин', '4-5 түвшин', '6-7 түвшин', '8 түвшин'];
+            const idMap = {
+                'all': 'lvl-all',
+                '2-3 түвшин': 'lvl-23',
+                '4-5 түвшин': 'lvl-45',
+                '6-7 түвшин': 'lvl-67',
+                '8 түвшин': 'lvl-8'
+            };
+
+            levels.forEach(lvl => {
+                const btn = document.getElementById(idMap[lvl]);
+                if (btn) {
+                    if (currentLevel === lvl) {
+                        btn.className = "level-btn px-3 py-1.5 text-xs rounded-xl font-bold bg-slate-900 text-white shadow-sm";
+                    } else {
+                        btn.className = "level-btn px-3 py-1.5 text-xs rounded-xl font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all";
+                    }
+                }
+            });
+        }
+
+        function getLevelBadgeClass(level) {
+            switch (level) {
+                case '2-3 түвшин': return 'level-badge-23';
+                case '4-5 түвшин': return 'level-badge-45';
+                case '6-7 түвшин': return 'level-badge-67';
+                case '8 түвшин': return 'level-badge-8';
+                default: return 'bg-slate-100 text-slate-700';
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-container');
+            const emptyState = document.getElementById('empty-state');
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+
+            const filtered = tasks.filter(t => {
+                const matchSubject = t.subject === currentSubject;
+                const matchLevel = currentLevel === 'all' || t.level === currentLevel;
+                const matchSearch = t.question.toLowerCase().includes(searchVal) || t.level.toLowerCase().includes(searchVal);
+                return matchSubject && matchLevel && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = filtered.map(task => {
+                const prog = userProgress[task.id] || {};
+                const isSolved = prog.solved === true;
+                const userChoice = prog.userAns || '';
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden">
+                        <div>
+                            <!-- Header badge & points -->
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${getLevelBadgeClass(task.level)}">
+                                    ${task.level}
+                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-semibold text-slate-400">Оноо: ${task.points}</span>
+                                    ${isSolved ? '<span class="text-[11px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><i class="fa-solid fa-check"></i> Бодсон</span>' : ''}
+                                </div>
+                            </div>
+
+                            <!-- Question Statement -->
+                            <div class="text-slate-800 text-sm font-medium mb-4 leading-relaxed katex-render">
+                                ${task.question}
+                            </div>
+
+                            <!-- Options Radio List -->
+                            <div class="space-y-2 mb-5">
+                                ${task.options.map((opt, idx) => {
+                                    const optionId = `opt-${task.id}-${idx}`;
+                                    const isSelected = userChoice === opt;
+                                    let btnStyle = "border-slate-200 bg-slate-50 hover:bg-indigo-50/50 hover:border-indigo-200 text-slate-700";
+                                    
+                                    if (isSelected) {
+                                        if (isSolved) {
+                                            btnStyle = "border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold ring-1 ring-emerald-500";
+                                        } else {
+                                            btnStyle = "border-rose-400 bg-rose-50 text-rose-800 font-semibold ring-1 ring-rose-400";
+                                        }
+                                    }
+
+                                    return `
+                                        <label for="${optionId}" class="flex items-start gap-3 p-2.5 rounded-xl border cursor-pointer transition-all text-xs ${btnStyle}">
+                                            <input type="radio" id="${optionId}" name="group-${task.id}" value="${escapeAttr(opt)}" ${isSelected ? 'checked' : ''} ${isSolved ? 'disabled' : ''} onchange="selectAnswer('${task.id}', this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                                            <span class="leading-snug katex-render flex-grow">${opt}</span>
+                                        </label>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Action controls -->
+                        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <button onclick="checkTaskAnswer('${task.id}')" ${isSolved ? 'disabled' : ''} class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs transition-all shadow-sm">
+                                    ${isSolved ? 'Зөв бодсон' : 'Хариулт шалгах'}
+                                </button>
+                                <button onclick="toggleSolution('${task.id}')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all flex items-center gap-1.5">
+                                    <i class="fa-regular fa-lightbulb text-amber-500"></i>
+                                    <span>Зөвлөмж</span>
+                                </button>
+                            </div>
+
+                            <!-- Solution / Hint Box -->
+                            <div id="solution-${task.id}" class="hidden p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1">
+                                <div class="font-bold flex items-center gap-1 text-amber-800">
+                                    <i class="fa-solid fa-circle-info"></i> Бодолтын алхам:
+                                </div>
+                                <div class="katex-render whitespace-pre-line leading-relaxed text-[11px]">${task.solution || 'Бодолтын тайлбар бэлэн бус байна.'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render KaTeX after innerHTML insertion
+            setTimeout(renderMath, 50);
+        }
+
+        function escapeAttr(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function renderMath() {
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError : false
+                });
+            }
+        }
+
+        function selectAnswer(taskId, value) {
+            if (!userProgress[taskId]) {
+                userProgress[taskId] = {};
+            }
+            userProgress[taskId].userAns = value;
+        }
+
+        function checkTaskAnswer(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            const prog = userProgress[taskId];
+
+            if (!prog || !prog.userAns) {
+                showToast('Хариулт сонгоогүй байна! Нэг сонголт хийнэ үү.', 'warning');
+                return;
+            }
+
+            const isCorrect = prog.userAns === task.correct;
+
+            if (isCorrect) {
+                prog.solved = true;
+                playAudioNotification(true);
+                showToast(`Зөв байна! +${task.points} оноо авлаа.`, 'success');
+            } else {
+                prog.solved = false;
+                playAudioNotification(false);
+                showToast('Хариулт буруу байна! Зөвлөмжийг ашиглан дахин оролдоно уу.', 'error');
+            }
+
+            // Log attempt for Teacher View
+            const logEntry = {
+                studentName: studentProfile.name,
+                studentClass: studentProfile.class,
+                subject: task.subject === 'math' ? 'Математик' : 'Физик',
+                level: task.level,
+                taskId: task.id,
+                userAns: prog.userAns,
+                isCorrect: isCorrect,
+                timestamp: new Date().toLocaleString('mn-MN')
+            };
+
+            studentLogs.unshift(logEntry);
+            saveStudentLogs();
+            saveProgress();
+            renderTasks();
+        }
+
+        function toggleSolution(taskId) {
+            const solBox = document.getElementById(`solution-${taskId}`);
+            if (solBox) {
+                solBox.classList.toggle('hidden');
+            }
+        }
+
+        function updateStats() {
+            const currentSubTasks = tasks.filter(t => t.subject === currentSubject);
+            const totalCount = currentSubTasks.length;
+            
+            let solvedCount = 0;
+            let totalPoints = 0;
+
+            tasks.forEach(t => {
+                if (userProgress[t.id] && userProgress[t.id].solved) {
+                    totalPoints += (t.points || 10);
+                    if (t.subject === currentSubject) {
+                        solvedCount++;
+                    }
+                }
+            });
+
+            document.getElementById('user-score').innerText = totalPoints;
+            document.getElementById('solved-count').innerText = `${solvedCount} / ${totalCount}`;
+
+            // Update Progress Bar
+            const percent = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+        }
+
+        function openStudentLoginModal() {
+            document.getElementById('modal-student-name').value = studentProfile.name !== 'Сурагч' ? studentProfile.name : '';
+            document.getElementById('modal-student-class').value = studentProfile.class || '7A';
+            document.getElementById('student-login-modal').classList.remove('hidden');
+        }
+
+        function saveStudentInfo(e) {
+            e.preventDefault();
+            const name = document.getElementById('modal-student-name').value.trim();
+            const cls = document.getElementById('modal-student-class').value.trim();
+
+            if (name) {
+                studentProfile = { name, class: cls };
+                localStorage.setItem('edu_student_profile_7th', JSON.stringify(studentProfile));
+                updateStudentInfoUI();
+                document.getElementById('student-login-modal').classList.add('hidden');
+                showToast(`Тавтай морилно уу, ${name}!`, 'info');
+            }
+        }
+
+        function updateStudentInfoUI() {
+            document.getElementById('student-display-name').innerText = studentProfile.name;
+            document.getElementById('student-display-class').innerText = `(${studentProfile.class})`;
+            document.getElementById('student-info-pill').classList.remove('hidden');
+            document.getElementById('student-info-pill').classList.add('flex');
+        }
+
+        function updateTeacherView() {
+            document.getElementById('teacher-task-count').innerText = tasks.length;
+            updateTeacherLogsUI();
+            renderTeacherTasksList();
+        }
+
+        function switchTeacherTab(tab) {
+            activeTeacherTab = tab;
+            const btnLogs = document.getElementById('teacher-tab-logs');
+            const btnBank = document.getElementById('teacher-tab-bank');
+            const contentLogs = document.getElementById('teacher-content-logs');
+            const contentBank = document.getElementById('teacher-content-bank');
+
+            if (tab === 'logs') {
+                btnLogs.className = "py-3 px-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition-all flex items-center gap-2";
+                btnBank.className = "py-3 px-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
+                contentLogs.classList.remove('hidden');
+                contentBank.classList.add('hidden');
+            } else {
+                btnBank.className = "py-3 px-4 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 transition-all flex items-center gap-2";
+                btnLogs.className = "py-3 px-4 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
+                contentBank.classList.remove('hidden');
+                contentLogs.classList.add('hidden');
+            }
+        }
+
+        function updateTeacherLogsUI() {
+            const tbody = document.getElementById('student-logs-tbody');
+            const empty = document.getElementById('logs-empty-state');
+
+            if (studentLogs.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            tbody.innerHTML = studentLogs.map(log => `
+                <tr class="hover:bg-slate-50/80 transition-all">
+                    <td class="p-3.5 font-bold text-slate-800">${log.studentName}</td>
+                    <td class="p-3.5"><span class="px-2 py-0.5 bg-slate-100 rounded text-slate-600 font-semibold">${log.studentClass}</span></td>
+                    <td class="p-3.5">${log.subject}</td>
+                    <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${getLevelBadgeClass(log.level)}">${log.level}</span></td>
+                    <td class="p-3.5 text-slate-500 font-mono text-[11px]">${log.taskId}</td>
+                    <td class="p-3.5 font-medium">${log.userAns}</td>
+                    <td class="p-3.5">
+                        ${log.isCorrect 
+                            ? '<span class="text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 w-max"><i class="fa-solid fa-check"></i> Зөв</span>' 
+                            : '<span class="text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1 w-max"><i class="fa-solid fa-xmark"></i> Буруу</span>'}
+                    </td>
+                    <td class="p-3.5 text-slate-400 text-[11px]">${log.timestamp}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTeacherTasksList() {
+            const container = document.getElementById('teacher-tasks-list');
+            container.innerHTML = tasks.map(t => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-3">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold ${getLevelBadgeClass(t.level)}">${t.level}</span>
+                                <span class="text-xs text-slate-400 uppercase font-bold">${t.subject === 'math' ? 'Математик' : 'Физик'}</span>
+                            </div>
+                            <button onclick="deleteTask('${t.id}')" class="text-xs text-rose-500 hover:text-rose-700 p-1" title="Усгах">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-800 katex-render">${t.question}</div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-xl">
+                        <span class="font-bold text-slate-700">Зөв хариу:</span> ${t.correct}
+                    </div>
+                </div>
+            `).join('');
+
+            setTimeout(renderMath, 50);
+        }
+
+        function toggleAddTaskModal(show) {
+            const modal = document.getElementById('add-task-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const subject = document.getElementById('modal-subject').value;
+            const level = document.getElementById('modal-level').value;
+            const question = document.getElementById('modal-question').value;
+            const optA = document.getElementById('modal-opt-a').value;
+            const optB = document.getElementById('modal-opt-b').value;
+            const optC = document.getElementById('modal-opt-c').value;
+            const optD = document.getElementById('modal-opt-d').value;
+            const correct = document.getElementById('modal-correct').value;
+            const solution = document.getElementById('modal-solution').value;
+
+            const newTask = {
+                id: 'custom-' + Date.now(),
+                subject,
+                level,
+                question,
+                options: [optA, optB, optC, optD],
+                correct,
+                solution,
+                points: level === '8 түвшин' ? 40 : (level === '6-7 түвшин' ? 30 : (level === '4-5 түвшин' ? 20 : 10))
+            };
+
+            tasks.unshift(newTask);
+            saveTasks();
+            toggleAddTaskModal(false);
+            document.getElementById('add-task-form').reset();
+
+            currentSubject = subject;
+            currentLevel = level;
+            renderSubjectTabs();
+            renderLevelButtons();
+            renderTasks();
+            updateStats();
+            updateTeacherView();
+
+            showToast('Шинэ даалгавар амжилттай нэмэгдэж, сурагчдад харагдаж байна!', 'success');
+        }
+
+        function deleteTask(taskId) {
+            showCustomDialog({
+                title: 'Даалгавар устгах',
+                message: 'Та энэ даалгаврыг сангаас устгахдаа итгэлтэй байна уу?',
+                iconClass: 'bg-rose-100 text-rose-600',
+                confirmText: 'Устгах',
+                onConfirm: () => {
+                    tasks = tasks.filter(t => t.id !== taskId);
+                    saveTasks();
+                    renderTasks();
+                    updateTeacherView();
+                    showToast('Даалгавар устгагдлаа.', 'info');
+                }
+            });
+        }
+
+        function confirmResetProgress() {
+            showCustomDialog({
+                title: 'Ахиц арилгах',
+                message: 'Та бүх бодсон даалгаврын ахиц ба цуглуулсан оноогоо арилгахдаа итгэлтэй байна уу?',
+                iconClass: 'bg-amber-100 text-amber-600',
+                confirmText: 'Арилгах',
+                onConfirm: () => {
+                    userProgress = {};
+                    saveProgress();
+                    renderTasks();
+                    showToast('Сурагчийн бодолтын ахиц шинэчлэгдлээ.', 'info');
+                }
+            });
+        }
+
+        function confirmResetAllTasks() {
+            showCustomDialog({
+                title: 'Анхны даалгаварт шилжих',
+                message: 'Бүх даалгаврыг системийн анхны стандарт сан (160 бодлого)-д буцаан тохируулах уу?',
+                iconClass: 'bg-indigo-100 text-indigo-600',
+                confirmText: 'Тийм, сэргээх',
+                onConfirm: () => {
+                    tasks = [...generateMathTasks(), ...generatePhysicsTasks()];
+                    saveTasks();
+                    renderTasks();
+                    updateTeacherView();
+                    showToast('Даалгаврын сан анхны байдалд сэргээгдлээ.', 'success');
+                }
+            });
+        }
+
+        function confirmClearLogs() {
+            showCustomDialog({
+                title: 'Түүх цэвэрлэх',
+                message: 'Сурагчдын илгээсэн бүх бодолтын түүхийг арилгах уу?',
+                iconClass: 'bg-rose-100 text-rose-600',
+                confirmText: 'Цэвэрлэх',
+                onConfirm: () => {
+                    studentLogs = [];
+                    saveStudentLogs();
+                    showToast('Сурагчдын түүх цэвэрлэгдлээ.', 'info');
+                }
+            });
+        }
+
+        // Custom Dialog System (replaces confirm and alert)
+        function showCustomDialog({ title, message, iconClass, confirmText, onConfirm }) {
+            const modal = document.getElementById('custom-dialog-modal');
+            const titleEl = document.getElementById('dialog-title');
+            const msgEl = document.getElementById('dialog-message');
+            const iconEl = document.getElementById('dialog-icon');
+            const actionsEl = document.getElementById('dialog-actions');
+
+            titleEl.innerText = title || 'Мэдэгдэл';
+            msgEl.innerText = message || '';
+            iconEl.className = `w-12 h-12 rounded-2xl flex items-center justify-center mx-auto text-xl ${iconClass || 'bg-indigo-100 text-indigo-600'}`;
+
+            actionsEl.innerHTML = `
+                <button id="dialog-cancel-btn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all">Цуцлах</button>
+                <button id="dialog-confirm-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow">${confirmText || 'Тийм'}</button>
+            `;
+
+            modal.classList.remove('hidden');
+
+            document.getElementById('dialog-cancel-btn').onclick = () => {
+                modal.classList.add('hidden');
+            };
+
+            document.getElementById('dialog-confirm-btn').onclick = () => {
+                modal.classList.add('hidden');
+                if (onConfirm) onConfirm();
+            };
+        }
+
+        // Toast Notifications
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let colors = 'bg-slate-900 text-white';
+            let icon = 'fa-circle-info';
+
+            if (type === 'success') {
+                colors = 'bg-emerald-600 text-white shadow-lg';
+                icon = 'fa-circle-check';
+            } else if (type === 'error') {
+                colors = 'bg-rose-600 text-white shadow-lg';
+                icon = 'fa-circle-xmark';
+            } else if (type === 'warning') {
+                colors = 'bg-amber-500 text-white shadow-lg';
+                icon = 'fa-triangle-exclamation';
+            }
+
+            toast.className = `${colors} px-4 py-3 rounded-2xl text-xs font-bold flex items-center gap-2.5 shadow-xl transition-all duration-300 transform translate-y-2 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${msg}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function playAudioNotification(isSuccess) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (isSuccess) {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+                    osc.frequency.exponentialRampToValueAtTime(164.81, ctx.currentTime + 0.2); // E3
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                }
+            } catch(e) {
+                // Audio fallback if muted by browser
+            }
+        }
+    </script>
+</body>
+</html>
